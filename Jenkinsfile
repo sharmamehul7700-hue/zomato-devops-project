@@ -19,6 +19,7 @@ pipeline {
 
         stage('Build') {
             steps {
+                echo 'Building Zomato Spring Boot Application'
                 sh 'mvn clean package'
             }
         }
@@ -26,13 +27,31 @@ pipeline {
 
         stage('Test') {
             steps {
+                echo 'Running Unit Tests'
                 sh 'mvn test'
+            }
+        }
+
+
+        stage('Docker Build') {
+            steps {
+                echo 'Building Docker Image'
+                sh 'docker build -t zomato-app:v1 .'
+            }
+        }
+
+
+        stage('Docker Image Check') {
+            steps {
+                echo 'Checking Docker Image'
+                sh 'docker images | grep zomato-app'
             }
         }
 
 
         stage('Archive') {
             steps {
+                echo 'Archiving JAR File'
                 archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
             }
         }
@@ -43,11 +62,11 @@ pipeline {
     post {
 
         success {
-            echo 'Zomato Build Successful 🚀'
+            echo 'Zomato CI Pipeline Completed Successfully 🚀'
         }
 
         failure {
-            echo 'Zomato Build Failed ❌'
+            echo 'Zomato CI Pipeline Failed ❌'
         }
 
     }
