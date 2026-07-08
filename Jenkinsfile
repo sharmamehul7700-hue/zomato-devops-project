@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     tools {
-        jdk 'JDK21'
         maven 'Maven'
     }
 
@@ -17,6 +16,37 @@ pipeline {
                 git branch: 'main',
                     credentialsId: 'github-pat',
                     url: 'https://github.com/sharmamehul7700-hue/zomato-devops-project.git'
+            }
+        }
+
+        stage('Environment Check') {
+            steps {
+                echo 'Checking Java and Maven Environment...'
+                sh '''
+                    echo "===== JAVA ====="
+                    java -version
+
+                    echo "===== JAVAC ====="
+                    javac -version
+
+                    echo "===== MAVEN ====="
+                    mvn -version
+
+                    echo "===== JAVA_HOME ====="
+                    echo $JAVA_HOME
+
+                    echo "===== PATH ====="
+                    echo $PATH
+
+                    echo "===== WHICH JAVA ====="
+                    which java
+
+                    echo "===== WHICH JAVAC ====="
+                    which javac
+
+                    echo "===== WHICH MVN ====="
+                    which mvn
+                '''
             }
         }
 
@@ -43,7 +73,7 @@ pipeline {
 
         stage('Import Image into K3s') {
             steps {
-                echo 'Importing Docker image into K3s...'
+                echo 'Importing image into K3s...'
                 sh '''
                     docker save ${IMAGE_NAME} -o zomato-app.tar
                     k3s ctr images import zomato-app.tar
@@ -65,7 +95,6 @@ pipeline {
 
         stage('Verify Deployment') {
             steps {
-                echo 'Checking Kubernetes resources...'
                 sh '''
                     kubectl get nodes
                     kubectl get pods
@@ -74,7 +103,7 @@ pipeline {
             }
         }
 
-        stage('Archive Artifact') {
+        stage('Archive') {
             steps {
                 archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
             }
