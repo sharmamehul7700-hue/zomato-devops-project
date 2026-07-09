@@ -12,9 +12,11 @@ spec:
       labels:
         app: zomato
     spec:
+      imagePullSecrets:
+      - name: ecr-secret
       containers:
       - name: zomato-container
-        image: zomato-app:v1
-        imagePullPolicy: Never
+        image: 356627769525.dkr.ecr.ap-south-1.amazonaws.com/zomato-app:v1
+        imagePullPolicy: Always
         ports:
         - containerPort: 8081
