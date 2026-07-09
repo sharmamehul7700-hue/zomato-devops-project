@@ -14,13 +14,11 @@ pipeline {
         "356627769525.dkr.ecr.ap-south-1.amazonaws.com/zomato-app"
 
         IMAGE_NAME = "zomato-app:v1"
-<<<<<<< HEAD
 
         ECR_IMAGE =
         "356627769525.dkr.ecr.ap-south-1.amazonaws.com/zomato-app:v1"
-=======
-         KUBECONFIG = "/etc/rancher/k3s/k3s.yaml"
->>>>>>> 283472f4dac5b17d7ad55ebe924620b1f2ad034e
+
+        KUBECONFIG = "/etc/rancher/k3s/k3s.yaml"
     }
 
 
@@ -51,6 +49,7 @@ pipeline {
                 kubectl version --client
                 aws --version
                 aws sts get-caller-identity
+                kubectl get nodes
                 '''
 
             }
@@ -80,10 +79,8 @@ pipeline {
 
 
 
-
         stage('Docker Build') {
 
-<<<<<<< HEAD
             steps {
 
                 sh '''
@@ -93,24 +90,8 @@ pipeline {
 
                 '''
 
-=======
-        stage('Deploy to Kubernetes') {
-    steps {
-        sh '''
-            echo "KUBECONFIG=$KUBECONFIG"
-
-            kubectl get nodes
-
-            kubectl apply -f kubernetes/
-
-            kubectl rollout restart deployment/zomato-deployment
-
-            kubectl rollout status deployment/zomato-deployment --timeout=120s
-        '''
->>>>>>> 283472f4dac5b17d7ad55ebe924620b1f2ad034e
             }
         }
-
 
 
 
@@ -131,7 +112,6 @@ pipeline {
 
             }
         }
-
 
 
 
@@ -156,8 +136,7 @@ pipeline {
 
 
 
-
-        stage('Deploy Kubernetes') {
+        stage('Deploy to Kubernetes') {
 
             steps {
 
@@ -181,14 +160,13 @@ pipeline {
 
 
 
-
         stage('Verify') {
 
             steps {
 
                 sh '''
 
-                kubectl get pods
+                kubectl get pods -o wide
 
                 kubectl get svc
 
@@ -205,14 +183,14 @@ pipeline {
 
         success {
 
-            echo "Zomato Deployment Successful"
+            echo "Zomato Deployment with AWS ECR Completed Successfully!"
 
         }
 
 
         failure {
 
-            echo "Pipeline Failed"
+            echo "Zomato Pipeline Failed!"
 
         }
 
