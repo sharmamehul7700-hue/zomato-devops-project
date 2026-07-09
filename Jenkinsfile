@@ -7,6 +7,7 @@ pipeline {
 
     environment {
         IMAGE_NAME = "zomato-app:v1"
+         KUBECONFIG = "/etc/rancher/k3s/k3s.yaml"
     }
 
     stages {
@@ -50,14 +51,18 @@ pipeline {
         }
 
         stage('Deploy to Kubernetes') {
-            steps {
-                sh '''
-                    kubectl apply -f kubernetes/
+    steps {
+        sh '''
+            echo "KUBECONFIG=$KUBECONFIG"
 
-                    kubectl rollout restart deployment/zomato-deployment
+            kubectl get nodes
 
-                    kubectl rollout status deployment/zomato-deployment --timeout=120s
-                '''
+            kubectl apply -f kubernetes/
+
+            kubectl rollout restart deployment/zomato-deployment
+
+            kubectl rollout status deployment/zomato-deployment --timeout=120s
+        '''
             }
         }
 
