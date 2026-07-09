@@ -43,6 +43,8 @@ pipeline {
             steps {
 
                 sh '''
+                export AWS_PAGER=""
+
                 java -version
                 mvn -version
                 docker --version
@@ -100,6 +102,7 @@ pipeline {
             steps {
 
                 sh '''
+                export AWS_PAGER=""
 
                 aws ecr get-login-password \
                 --region ${AWS_REGION} | \
